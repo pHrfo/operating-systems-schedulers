@@ -19,7 +19,7 @@ public class Priority extends Scheduler{
 		// This is made just to guarantee that the processes will be fresh when
 		// the execution of the schedulers begin		
 		for (Process p : processList)
-			p.resetExecutionTime();
+			p.reset();
 		
 		
 		// At this point, the process list is sorted by the arrival time.
@@ -52,7 +52,7 @@ public class Priority extends Scheduler{
 						currentProcess = p;
 				
 				if (currentProcess.getExecutionTime() == 0 ) {
-					currentProcess.setResponseTime(this.timer);
+					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
 				
 			}

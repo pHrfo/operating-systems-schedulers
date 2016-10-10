@@ -21,7 +21,7 @@ public class SJF extends Scheduler{
 		// This is made just to guarantee that the processes will be fresh when
 		// the execution of the schedulers begin		
 		for (Process p : processList)
-			p.resetExecutionTime();
+			p.reset();
 		
 		// At this point, the process list is sorted by the arrival time.
 		// Now, we will implement the algorithm. It is going to repeat
@@ -53,7 +53,7 @@ public class SJF extends Scheduler{
 						currentProcess = p;
 				
 				if (currentProcess.getExecutionTime() == 0 ) {
-					currentProcess.setResponseTime(this.timer);
+					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
 				
 			}

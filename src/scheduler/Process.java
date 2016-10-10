@@ -65,7 +65,7 @@ public class Process {
 		return this.executionTime;
 	}
 	
-	public void resetExecutionTime() {
+	public void reset() {
 		this.executionTime = 0;
 		this.waitTime = 0;
 	}

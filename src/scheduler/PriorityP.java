@@ -19,7 +19,7 @@ public class PriorityP extends Scheduler{
 		// This is made just to guarantee that the processes will be fresh when
 		// the execution of the schedulers begin		
 		for (Process p : processList)
-			p.resetExecutionTime();
+			p.reset();
 		
 		
 		// At this point, the process list is sorted by the arrival time.
@@ -39,7 +39,7 @@ public class PriorityP extends Scheduler{
 					readyQueue.add(processList.remove(0));
 			}
 			
-			// Priority Criteria to choose a process: biggest priority
+			// PriorityP Criteria to choose a process: biggest priority
 			
 			// This is a preemptive algorithm. If the ready queue is not empty we
 			// have to start the execution of the process in the queue with maximum
@@ -52,7 +52,7 @@ public class PriorityP extends Scheduler{
 						currentProcess = p;
 				
 				if (currentProcess.getExecutionTime() == 0 ) {
-					currentProcess.setResponseTime(this.timer);
+					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
 				
 			}

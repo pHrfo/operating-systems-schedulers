@@ -14,6 +14,7 @@ public class Main {
 		//SJFP scheduler = new SJFP(processList);
 		//Priority scheduler = new Priority(processList);
 		//PriorityP scheduler = new PriorityP(processList);
+		//RoundRobin scheduler = new RoundRobin(processList, 2);
 		
 		//scheduler.execute();
 
@@ -22,6 +23,7 @@ public class Main {
 		schedulers.add(new SJFP(processList));
 		schedulers.add(new Priority(processList));
 		schedulers.add(new PriorityP(processList));
+		schedulers.add(new RoundRobin(processList, 2));
 		
 		for (Scheduler scheduler : schedulers)
 			scheduler.execute();

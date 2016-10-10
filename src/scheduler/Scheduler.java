@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class Scheduler {
+public abstract class Scheduler {
 	
 	protected String algorithmName;	
 	protected ArrayList<Process> processList;
@@ -42,9 +42,7 @@ public class Scheduler {
 		
 	}
 	
-	public void execute() {		
-		// This method should be overridden in the subclasses
-	}
+	public abstract void execute();
 	
 	public void tick() {
 		timer++;

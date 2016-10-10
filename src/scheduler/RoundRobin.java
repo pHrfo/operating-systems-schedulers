@@ -1,18 +1,47 @@
 package scheduler;
 
-
 import java.util.ArrayList;
 
-
-public class FCFS extends Scheduler{
-
-	public FCFS() {
+public class RoundRobin extends Scheduler {
+	
+	protected int quantum;
+	protected int quantumTimer;
+	protected int currentPosition;
+	
+	public RoundRobin() {
 		super();
+		this.quantum = 0;
 	}
 	
-	public FCFS(ArrayList<Process> processList) {
+	public RoundRobin(ArrayList<Process> processList, int quantum) {
 		super(processList);
-		this.algorithmName = "FCFS";
+		this.quantum = quantum;
+		this.algorithmName = "Round Robin";
+		this.currentPosition = 0;
+		this.quantumTimer = 0;
+	}
+	
+	public void increaseQuantumTimer() {
+		this.quantumTimer++;
+	}
+	
+	public void resetQuantumTimer() {
+		this.quantumTimer = 0;
+	}
+	
+	public int getCurrentQuantumTimer() {
+		return this.quantumTimer;
+	}
+	
+	public void increaseCurrentPosition() {
+		currentPosition++;
+		if (currentPosition >= readyQueue.size()) {
+			currentPosition = 0;
+		}
+	}
+	
+	public int getCurrentPosition() {
+		return currentPosition;
 	}
 	
 	public void execute() {
@@ -29,8 +58,9 @@ public class FCFS extends Scheduler{
 		// until every process is in the finished queue
 		
 		while((!processList.isEmpty()) || (!readyQueue.isEmpty())) {
-			// First, we tick the clock
+			// First, we tick the clocks
 			tick();
+			increaseQuantumTimer();
 			
 			// Here, we have to check whether there are processes that are able
 			// to enter the ready queue
@@ -41,7 +71,7 @@ public class FCFS extends Scheduler{
 					readyQueue.add(processList.remove(0));
 			}
 			
-			// FCFS Criteria to choose a process: First to arrive in the queue
+			// Round Robin Criteria to choose a process: The queue order
 			
 			// If there is no process running and the ready queue is not empty
 			// we have to start the execution of the first process in the queue.
@@ -49,10 +79,17 @@ public class FCFS extends Scheduler{
 			// to set its response time to the current time
 			if (!running && !readyQueue.isEmpty()) {
 				running = true;
-				currentProcess = readyQueue.get(0);
+				currentProcess = readyQueue.get(getCurrentPosition());
 				if (currentProcess.getExecutionTime() == 0 ) {
 					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
+			}
+			
+			if (this.quantumTimer > this.quantum) {
+				increaseCurrentPosition();
+				this.resetQuantumTimer();
+				this.increaseQuantumTimer();
+				currentProcess = readyQueue.get(getCurrentPosition());
 			}
 			
 			// For every process in the ready queue that is not running, we have
@@ -71,16 +108,17 @@ public class FCFS extends Scheduler{
 //			}
 			
 			if (currentProcess.pid != -1 && currentProcess.getExecutionTime() == currentProcess.getBurstTime()) {
-				finishedQueue.add(readyQueue.remove(0));
+				finishedQueue.add(readyQueue.remove(currentPosition));
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
 				currentProcess = new Process();
 				running = false;
+				resetQuantumTimer();
+				increaseCurrentPosition();
 			}
 			
 		}
 		printStatistics();
 		
 	}
-
 
 }
