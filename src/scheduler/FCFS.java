@@ -1,6 +1,6 @@
 package scheduler;
 
-import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 
 
@@ -12,11 +12,17 @@ public class FCFS extends Scheduler{
 	
 	public FCFS(ArrayList<Process> processList) {
 		super(processList);
+		this.algorithmName = "FCFS";
 	}
 	
 	public void execute() {
 		int t;
-		Process currentProcess = new Process();		
+		Process currentProcess = new Process();
+		
+		// This is made just to guarantee that the processes will be fresh when
+		// the execution of the schedulers begin		
+		for (Process p : processList)
+			p.resetExecutionTime();
 		
 		// At this point, the process list is sorted by the arrival time.
 		// Now, we will implement the algorithm. It is going to repeat
@@ -35,28 +41,38 @@ public class FCFS extends Scheduler{
 					readyQueue.add(processList.remove(0));
 			}
 			
+			// FCFS Criteria to choose a process: First to arrive in the queue
+			
 			// If there is no process running and the ready queue is not empty
 			// we have to start the execution of the first process in the queue.
+			// If it is the first time the current process is executing, we have
+			// to set its response time to the current time
 			if (!running && !readyQueue.isEmpty()) {
 				running = true;
 				currentProcess = readyQueue.get(0);
+				if (currentProcess.getExecutionTime() == 0 ) {
+					currentProcess.setResponseTime(this.timer);
+				}
 			}
 			
 			// For every process in the ready queue that is not running, we have
 			// tho increase their wait time by one
-			for (Process p : readyQueue)
+			for (Process p : readyQueue) {
 				if (p.pid != currentProcess.pid)
 					p.increaseWaitTime();
-			
-			if (currentProcess.pid != -1) {
-				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " executando");
-			} else {
-				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
+				else
+					p.increaseExecutionTime();
 			}
+			
+//			if (currentProcess.pid != -1) {
+//				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " executando");
+//			} else {
+//				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
+//			}
 			
 			if (currentProcess.pid != -1 && currentProcess.getWaitTime() + currentProcess.getArrivalTime() + currentProcess.getBurstTime() <= currentTime()) {
 				finishedQueue.add(readyQueue.remove(0));
-				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
+//				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
 				currentProcess = new Process();
 				running = false;
 			}
@@ -66,33 +82,5 @@ public class FCFS extends Scheduler{
 		
 	}
 
-	public void printStatistics() {
-		DecimalFormat df = new DecimalFormat("#.####");
-		
-		double avgWait;
-		//double avgResponse;
-		double throughput;
-		
-		int auxSum = 0;
-		
-		for (Process p : finishedQueue) {
-			auxSum += p.waitTime;
-		}
-		
-		avgWait = auxSum/finishedQueue.size();
-		
-		throughput = (double)finishedQueue.size()/(double)currentTime();
-		
-		System.out.println(finishedQueue.size());
-		System.out.println(currentTime());
-		
-		
-		System.out.println("\n===================STATISTICS: FCFS===================\n");
-		System.out.println("Number of processes: " + finishedQueue.size());
-		System.out.println("Average throughput: " + df.format(throughput));
-		System.out.println("Average wait time: " + avgWait);
-		
-		
-	}
 
 }

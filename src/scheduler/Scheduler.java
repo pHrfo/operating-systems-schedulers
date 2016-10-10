@@ -1,11 +1,13 @@
 package scheduler;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 public class Scheduler {
 	
+	protected String algorithmName;	
 	protected ArrayList<Process> processList;
 	protected ArrayList<Process> readyQueue;
 	protected ArrayList<Process> finishedQueue;
@@ -40,12 +42,49 @@ public class Scheduler {
 		
 	}
 	
+	public void execute() {		
+		// This method should be overridden in the subclasses
+	}
+	
 	public void tick() {
 		timer++;
 	}
 	
 	public int currentTime() {
 		return timer;
+	}
+	
+	public void printStatistics() {
+		DecimalFormat df = new DecimalFormat("#.####");
+		
+		double avgWait;
+		double avgResponse;
+		double throughput;
+		
+		int auxSumWait = 0;
+		int auxSumResponse = 0;
+		
+		for (Process p : finishedQueue) {
+			auxSumWait += p.waitTime;
+			auxSumResponse += p.responseTime;
+		}
+		
+		avgWait = auxSumWait/finishedQueue.size();
+		avgResponse = auxSumResponse/finishedQueue.size();
+		
+		throughput = (double)finishedQueue.size()/(double)currentTime();
+		
+		//System.out.println(finishedQueue.size());
+		//System.out.println(currentTime());
+		
+		
+		System.out.println("\n====================== STATISTICS: " + this.algorithmName + " ======================\n");
+		System.out.println("Number of processes: " + finishedQueue.size());
+		System.out.println("Average throughput: " + df.format(throughput));
+		System.out.println("Average wait time: " + avgWait);
+		System.out.println("Average response time: " + avgResponse);
+		
+		
 	}
 	
 }

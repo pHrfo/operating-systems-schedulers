@@ -1,17 +1,16 @@
 package scheduler;
 
-
 import java.util.ArrayList;
 
-
-public class SJF extends Scheduler{
-	public SJF() {
+public class SJFP extends Scheduler {
+	
+	public SJFP() {
 		super();
 	}
 	
-	public SJF(ArrayList<Process> processList) {
+	public SJFP(ArrayList<Process> processList) {
 		super(processList);
-		this.algorithmName = "SJF";
+		this.algorithmName = "SJFP";
 	}
 	
 	public void execute() {
@@ -22,6 +21,7 @@ public class SJF extends Scheduler{
 		// the execution of the schedulers begin		
 		for (Process p : processList)
 			p.resetExecutionTime();
+		
 		
 		// At this point, the process list is sorted by the arrival time.
 		// Now, we will implement the algorithm. It is going to repeat
@@ -40,13 +40,13 @@ public class SJF extends Scheduler{
 					readyQueue.add(processList.remove(0));
 			}
 			
-			// SJF Criteria to choose a process: least burst time
+			// SJFP Criteria to choose a process: least burst time
 			
-			// If there is no process running and the ready queue is not empty we
+			// This is a preemptive algorithm. If the ready queue is not empty we
 			// have to start the execution of the process in the queue with least
 			// burst time. If it is the first time the current process is executing,
 			// we have to set its response time to the current time
-			if (!running && !readyQueue.isEmpty()) {
+			if (!readyQueue.isEmpty()) {
 				running = true;
 				for (Process p : readyQueue)
 					if (currentProcess.burstTime > p.burstTime)
@@ -67,13 +67,13 @@ public class SJF extends Scheduler{
 					p.increaseExecutionTime();
 			}
 			
-//			if (currentProcess.pid != -1) {
+//			if ((currentProcess.pid != -1){
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " executando");
 //			} else {
 //				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
 //			}
 			
-			if (currentProcess.pid != -1 && currentProcess.getWaitTime() + currentProcess.getArrivalTime() + currentProcess.getBurstTime() <= currentTime()) {
+			if (currentProcess.pid != -1 && currentProcess.getExecutionTime() == currentProcess.getBurstTime()) {
 				finishedQueue.add(currentProcess);
 				readyQueue.remove(currentProcess);
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");

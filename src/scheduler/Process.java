@@ -8,6 +8,7 @@ public class Process {
 	protected int priority;
 	protected int waitTime;
 	protected int responseTime;
+	protected int executionTime;
 	
 	public Process() {
 		this(0,-1,5000,0);
@@ -20,6 +21,8 @@ public class Process {
 		this.burstTime = burstTime;
 		this.priority = priority;
 		this.waitTime = 0;
+		this.responseTime = 0;
+		this.executionTime = 0;
 	
 	}
 	
@@ -48,5 +51,22 @@ public class Process {
 	
 	public int getArrivalTime() {
 		return arrivalTime;
+	}
+	
+	public void setResponseTime(int responseTime) {
+		this.responseTime = responseTime;
+	}
+	
+	public void increaseExecutionTime() {
+		this.executionTime++;
+	}
+	
+	public int getExecutionTime() {
+		return this.executionTime;
+	}
+	
+	public void resetExecutionTime() {
+		this.executionTime = 0;
+		this.waitTime = 0;
 	}
 }

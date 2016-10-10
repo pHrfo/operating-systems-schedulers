@@ -7,7 +7,23 @@ public class Main {
 		CSVReader reader = new CSVReader();
 		ArrayList<Process> processList = reader.readFile("/home/ph/workspace/ProcessScheduler/processos.csv");
 		
-		SJF scheduler = new SJF(processList);
-		scheduler.execute();
+		ArrayList<Scheduler> schedulers = new ArrayList<>();
+		
+		//FCFS scheduler = new FCFS(processList);
+		//SJF scheduler = new SJF(processList);
+		//SJFP scheduler = new SJFP(processList);
+		//Priority scheduler = new Priority(processList);
+		//PriorityP scheduler = new PriorityP(processList);
+		
+		//scheduler.execute();
+
+		schedulers.add(new FCFS(processList));
+		schedulers.add(new SJF(processList));
+		schedulers.add(new SJFP(processList));
+		schedulers.add(new Priority(processList));
+		schedulers.add(new PriorityP(processList));
+		
+		for (Scheduler scheduler : schedulers)
+			scheduler.execute();
 	}
 }
