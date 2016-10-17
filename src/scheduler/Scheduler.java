@@ -12,6 +12,7 @@ public abstract class Scheduler {
 	protected ArrayList<Process> readyQueue;
 	protected ArrayList<Process> finishedQueue;
 	protected int timer;
+	protected int runningTime;
 	protected boolean running;
 	
 	public Scheduler() {
@@ -20,6 +21,7 @@ public abstract class Scheduler {
 		readyQueue = new ArrayList<>();
 		finishedQueue = new ArrayList<>();
 		timer = 0;
+		runningTime = 0;
 		running = false;
 		
 	}
@@ -33,10 +35,10 @@ public abstract class Scheduler {
 		// For the all the algorithms, we have to sort our list of processes by the arrivalTime
 		Collections.sort(this.processList, new Comparator<Process>() {
 			public int compare(Process a, Process b) {
-				if (a.arrivalTime >= b.arrivalTime)
-					return 1;
+				if (a.arrivalTime == b.arrivalTime)
+					return a.burstTime - b.burstTime;
 				else
-					return -1;
+					return a.arrivalTime - b.arrivalTime;
 			}
 		});
 		
@@ -46,6 +48,7 @@ public abstract class Scheduler {
 	
 	public void tick() {
 		timer++;
+	
 	}
 	
 	public int currentTime() {
@@ -57,18 +60,27 @@ public abstract class Scheduler {
 		
 		double avgWait;
 		double avgResponse;
+		double avgTurnaround;
+		double avgContextChange;
 		double throughput;
 		
-		int auxSumWait = 0;
-		int auxSumResponse = 0;
+		double auxSumWait = 0;
+		double auxSumResponse = 0;
+		double auxSumTurnaround = 0;
+		double auxSumContextChange = 0;
 		
 		for (Process p : finishedQueue) {
 			auxSumWait += p.waitTime;
 			auxSumResponse += p.responseTime;
+			auxSumTurnaround += (p.getWaitTime() + p.getBurstTime());
+			auxSumContextChange += p.getContextChanges();
+			//System.out.println("Process " + p.pid + " waited for " + p.getResponseTime() + " Seconds");
 		}
 		
 		avgWait = auxSumWait/finishedQueue.size();
 		avgResponse = auxSumResponse/finishedQueue.size();
+		avgTurnaround = auxSumTurnaround/finishedQueue.size();
+		avgContextChange = auxSumContextChange/finishedQueue.size();
 		
 		throughput = (double)finishedQueue.size()/(double)currentTime();
 		
@@ -77,11 +89,15 @@ public abstract class Scheduler {
 		
 		
 		System.out.println("\n====================== STATISTICS: " + this.algorithmName + " ======================\n");
-		System.out.println("Number of processes: " + finishedQueue.size());
+		System.out.println("Total processing time: " + timer + "s");
+		System.out.println("Percentage of CPU usage: " + df.format((double)runningTime/timer));
 		System.out.println("Average throughput: " + df.format(throughput));
+		System.out.println("Average turnaround time " + avgTurnaround);
 		System.out.println("Average wait time: " + avgWait);
 		System.out.println("Average response time: " + avgResponse);
-		
+		System.out.println("Total number of context changes: " + auxSumContextChange);
+		System.out.println("Average number of context changes: " + avgContextChange);
+		System.out.println("Number of processes: " + finishedQueue.size());
 		
 	}
 	

@@ -23,7 +23,7 @@ public class Main {
 		schedulers.add(new SJFP(processList));
 		schedulers.add(new Priority(processList));
 		schedulers.add(new PriorityP(processList));
-		schedulers.add(new RoundRobin(processList, 2));
+		schedulers.add(new RoundRobin(processList, 10));
 		
 		for (Scheduler scheduler : schedulers)
 			scheduler.execute();

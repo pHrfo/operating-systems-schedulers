@@ -50,6 +50,7 @@ public class FCFS extends Scheduler{
 			if (!running && !readyQueue.isEmpty()) {
 				running = true;
 				currentProcess = readyQueue.get(0);
+				currentProcess.increaseContextChanges();
 				if (currentProcess.getExecutionTime() == 0 ) {
 					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
@@ -70,7 +71,11 @@ public class FCFS extends Scheduler{
 //				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
 //			}
 			
+			if (running)
+				runningTime++;
+			
 			if (currentProcess.pid != -1 && currentProcess.getExecutionTime() == currentProcess.getBurstTime()) {
+				currentProcess.increaseContextChanges();
 				finishedQueue.add(readyQueue.remove(0));
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
 				currentProcess = new Process();

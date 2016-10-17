@@ -48,8 +48,9 @@ public class Priority extends Scheduler{
 			if (!running && !readyQueue.isEmpty()) {
 				running = true;
 				for (Process p : readyQueue)
-					if (currentProcess.priority < p.priority)
+					if (currentProcess.priority > p.priority)
 						currentProcess = p;
+				currentProcess.increaseContextChanges();
 				
 				if (currentProcess.getExecutionTime() == 0 ) {
 					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
@@ -72,9 +73,13 @@ public class Priority extends Scheduler{
 //				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
 //			}
 			
-			if (currentProcess.pid != -1 && currentProcess.getWaitTime() + currentProcess.getArrivalTime() + currentProcess.getBurstTime() <= currentTime()) {
+			if (running)
+				runningTime++;
+			
+			if (currentProcess.pid != -1 && currentProcess.getExecutionTime() >= currentProcess.getBurstTime()) {
 				finishedQueue.add(currentProcess);
 				readyQueue.remove(currentProcess);
+				currentProcess.increaseContextChanges();
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
 				currentProcess = new Process();
 				running = false;

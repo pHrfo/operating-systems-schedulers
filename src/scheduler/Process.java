@@ -9,9 +9,10 @@ public class Process {
 	protected int waitTime;
 	protected int responseTime;
 	protected int executionTime;
+	protected int contextChanges;
 	
 	public Process() {
-		this(0,-1,5000,0);
+		this(0,-1,5000,5000);
 	}
 	
 	public Process(int arrivalTime, int pid, int burstTime, int priority) {
@@ -23,6 +24,7 @@ public class Process {
 		this.waitTime = 0;
 		this.responseTime = 0;
 		this.executionTime = 0;
+		this.contextChanges = 0;
 	
 	}
 	
@@ -65,8 +67,22 @@ public class Process {
 		return this.executionTime;
 	}
 	
+	public int getResponseTime() {
+		return this.responseTime;
+	}
+	
+	public int getContextChanges() {
+		return this.contextChanges;
+	}
+	
+	public void increaseContextChanges() {
+		this.contextChanges++;
+	}
+	
 	public void reset() {
 		this.executionTime = 0;
 		this.waitTime = 0;
+		this.responseTime = 0;
+		this.contextChanges = 0;
 	}
 }

@@ -46,6 +46,7 @@ public class RoundRobin extends Scheduler {
 	
 	public void execute() {
 		int t;
+		Process aux = new Process();
 		Process currentProcess = new Process();
 		
 		// This is made just to guarantee that the processes will be fresh when
@@ -67,8 +68,11 @@ public class RoundRobin extends Scheduler {
 			t = 0;
 			while(t <= currentTime() && !processList.isEmpty())  {
 				t = processList.get(0).arrivalTime;
-				if (t <= currentTime())
-					readyQueue.add(processList.remove(0));
+				if (t <= currentTime()) {
+					aux = processList.remove(0);
+					readyQueue.add(aux);
+					//System.out.println("Process " + aux.pid + " Entered the ready queue in time = " + currentTime());
+				}
 			}
 			
 			// Round Robin Criteria to choose a process: The queue order
@@ -78,18 +82,29 @@ public class RoundRobin extends Scheduler {
 			// If it is the first time the current process is executing, we have
 			// to set its response time to the current time
 			if (!running && !readyQueue.isEmpty()) {
+				resetQuantumTimer();
 				running = true;
+				
+				if (getCurrentPosition() >= readyQueue.size())
+					increaseCurrentPosition();
 				currentProcess = readyQueue.get(getCurrentPosition());
+				currentProcess.increaseContextChanges();
 				if (currentProcess.getExecutionTime() == 0 ) {
 					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
 				}
+				increaseQuantumTimer();
 			}
 			
 			if (this.quantumTimer > this.quantum) {
 				increaseCurrentPosition();
 				this.resetQuantumTimer();
 				this.increaseQuantumTimer();
+				currentProcess.increaseContextChanges();
 				currentProcess = readyQueue.get(getCurrentPosition());
+				currentProcess.increaseContextChanges();
+				if (currentProcess.getExecutionTime() == 0 ) {
+					currentProcess.setResponseTime(this.timer - currentProcess.arrivalTime);
+				}
 			}
 			
 			// For every process in the ready queue that is not running, we have
@@ -107,13 +122,16 @@ public class RoundRobin extends Scheduler {
 //				System.out.println("Tempo " + currentTime() + ": Nenhum Processo executado");
 //			}
 			
+			if (running)
+				runningTime++;
+			
 			if (currentProcess.pid != -1 && currentProcess.getExecutionTime() == currentProcess.getBurstTime()) {
 				finishedQueue.add(readyQueue.remove(currentPosition));
 //				System.out.println("Tempo " + currentTime() + ": Processo " + currentProcess.pid + " Finalizado");
+				currentProcess.increaseContextChanges();
 				currentProcess = new Process();
 				running = false;
 				resetQuantumTimer();
-				increaseCurrentPosition();
 			}
 			
 		}
